@@ -26,7 +26,6 @@ func ReadFileToArrayOfLines(filename string) ([]string) {
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading file:", err)
 	}
-	fmt.Println(lines)
 	
 	return lines
 }
