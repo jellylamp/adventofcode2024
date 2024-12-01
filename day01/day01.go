@@ -2,7 +2,6 @@ package day01
 
 import (
 	"adventofcode2024/utils"
-	"fmt"
 	"strings"
 	"sort"
 )
@@ -13,8 +12,7 @@ var secondDigitList []int
 func parseInput(filename string) {
     input := utils.ReadFileToArrayOfLines(filename)
 
-	for index, value := range input {
-        fmt.Printf("Index: %d, Value: %s\n", index, value)
+	for _, value := range input {
 		digitsArr := strings.Split(value, "   ")
 		firstDigit := utils.ConvertStringToInt(digitsArr[0])
 		secondDigit := utils.ConvertStringToInt(digitsArr[1])
