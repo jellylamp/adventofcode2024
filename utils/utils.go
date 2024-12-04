@@ -53,6 +53,38 @@ func ReadFileAsSingleLine(filename string) string {
 	return result
 }
 
+func ReadFileTo2DArray(filename string) [][]string {
+	file, _ := os.Open(filename)
+	defer file.Close()
+
+	var array [][]string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		row := make([]string, len(line))
+		for i, char := range line {
+			row[i] = string(char)
+		}
+		array = append(array, row)
+	}
+
+	return array
+}
+
+func IsValid2DIndex(grid [][]string, row int, col int) bool {
+	// Check if row index is valid
+	if row < 0 || row >= len(grid) {
+		return false
+	}
+
+	// Check if column index is valid for the given row
+	if col < 0 || col >= len(grid[row]) {
+		return false
+	}
+
+	return true
+}
+
 func ConvertStringToInt(stringToConvert string) int {
 	num, err := strconv.Atoi(stringToConvert)
 	if err != nil {
