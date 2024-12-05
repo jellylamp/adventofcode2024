@@ -109,3 +109,12 @@ func CheckIntAbsValue(num int) int {
 	}
 	return num
 }
+
+func IndexOf(list []string, element string) int {
+	for i, v := range list {
+		if v == element {
+			return i
+		}
+	}
+	return -1
+}
