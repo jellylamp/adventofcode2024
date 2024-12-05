@@ -18,18 +18,18 @@ func TestPartA(t *testing.T) {
 	}
 }
 
-// func TestSamplePartB(t *testing.T) {
-// 	output := PartB("./samples/partbsample.txt")
-// 	var expected int64 = 48
-// 	if output != expected {
-// 		t.Errorf("sample part b = %d; expected %d", output, expected)
-// 	}
-// }
+func TestSamplePartB(t *testing.T) {
+	output := PartB("./samples/sample.txt")
+	expected := 123
+	if output != expected {
+		t.Errorf("sample part b = %d; expected %d", output, expected)
+	}
+}
 
-// func TestPartB(t *testing.T) {
-// 	output := PartB("./samples/parta.txt")
-// 	var expected int64 = 88811886
-// 	if output != expected {
-// 		t.Errorf("sample part a = %d; expected %d", output, expected)
-// 	}
-// }
+func TestPartB(t *testing.T) {
+	output := PartB("./samples/input.txt")
+	expected := 4230 // too low
+	if output != expected {
+		t.Errorf("sample part b = %d; expected %d", output, expected)
+	}
+}
