@@ -68,7 +68,7 @@ func TestXBottomRowSamplePartB(t *testing.T) {
 
 func TestPartB(t *testing.T) {
 	output := PartB("./samples/parta.txt")
-	var expected = 2781 // too high
+	var expected = 1880
 	if output != expected {
 		t.Errorf("sample part b = %d; expected %d", output, expected)
 	}

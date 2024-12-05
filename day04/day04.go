@@ -188,32 +188,32 @@ func checkCellMasX(grid [][]string, rowIndex int, colIndex int, levelsDeep int, 
 }
 
 func checkCrossPath(grid [][]string, aRowIndex int, aColIndex int, foundVector Direction) bool {
-	if foundVector == NW || foundVector == SW {
-		// check NE and SE for MAS or SAM
+	if foundVector == NW || foundVector == SE {
+		// check NE and SW for MAS or SAM
 		neOffsets := directionOffsets[NE]
 		neRow := aRowIndex + neOffsets.rowOffset
 		neCol := aColIndex + neOffsets.colOffset
+		swOffsets := directionOffsets[SW]
+		swRow := aRowIndex + swOffsets.rowOffset
+		swCol := aColIndex + swOffsets.colOffset
+
+		if grid[neRow][neCol] == "S" && grid[swRow][swCol] == "M" {
+			return true
+		} else if grid[neRow][neCol] == "M" && grid[swRow][swCol] == "S" {
+			return true
+		}
+	} else if foundVector == SW || foundVector == NE {
+		// check NW and SE for MAS or SAM
+		nwOffsets := directionOffsets[NW]
+		nwRow := aRowIndex + nwOffsets.rowOffset
+		nwCol := aColIndex + nwOffsets.colOffset
 		seOffsets := directionOffsets[SE]
 		seRow := aRowIndex + seOffsets.rowOffset
 		seCol := aColIndex + seOffsets.colOffset
 
-		if grid[neRow][neCol] == "S" && grid[seRow][seCol] == "M" {
+		if grid[nwRow][nwCol] == "S" && grid[seRow][seCol] == "M" {
 			return true
-		} else if grid[neRow][neCol] == "M" && grid[seRow][seCol] == "S" {
-			return true
-		}
-	} else if foundVector == SE || foundVector == NE {
-		// check NW and SW for MAS or SAM
-		neOffsets := directionOffsets[NW]
-		nwRow := aRowIndex + neOffsets.rowOffset
-		nwCol := aColIndex + neOffsets.colOffset
-		seOffsets := directionOffsets[SW]
-		swRow := aRowIndex + seOffsets.rowOffset
-		swCol := aColIndex + seOffsets.colOffset
-
-		if grid[nwRow][nwCol] == "S" || grid[swRow][swCol] == "M" {
-			return true
-		} else if grid[nwRow][nwCol] == "M" || grid[swRow][swCol] == "S" {
+		} else if grid[nwRow][nwCol] == "M" && grid[seRow][seCol] == "S" {
 			return true
 		}
 	}
