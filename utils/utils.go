@@ -71,20 +71,6 @@ func ReadFileTo2DArray(filename string) [][]string {
 	return array
 }
 
-func IsValid2DIndex(grid [][]string, row int, col int) bool {
-	// Check if row index is valid
-	if row < 0 || row >= len(grid) {
-		return false
-	}
-
-	// Check if column index is valid for the given row
-	if col < 0 || col >= len(grid[row]) {
-		return false
-	}
-
-	return true
-}
-
 func ConvertStringToInt(stringToConvert string) int {
 	num, err := strconv.Atoi(stringToConvert)
 	if err != nil {
