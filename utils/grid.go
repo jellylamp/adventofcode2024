@@ -120,3 +120,12 @@ func PrintGrid(grid [][]string) {
 		fmt.Println(row)
 	}
 }
+
+func ResetGrid(grid [][]string) [][]string {
+	copiedGrid := make([][]string, len(grid))
+	for i := range grid {
+		copiedGrid[i] = make([]string, len(grid[i]))
+		copy(copiedGrid[i], grid[i])
+	}
+	return copiedGrid
+}

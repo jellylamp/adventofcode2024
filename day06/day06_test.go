@@ -18,18 +18,25 @@ func TestPartA(t *testing.T) {
 	}
 }
 
-// func TestSamplePartB(t *testing.T) {
-// 	output := PartB("./samples/sample.txt")
-// 	expected := 123
-// 	if output != expected {
-// 		t.Errorf("sample part b = %d; expected %d", output, expected)
-// 	}
-// }
+func TestSamplePartB(t *testing.T) {
+	output := PartB("./samples/sample.txt")
+	expected := 6
+	if output != expected {
+		t.Errorf("sample part b = %d; expected %d", output, expected)
+	}
+}
 
-// func TestPartB(t *testing.T) {
-// 	output := PartB("./samples/input.txt")
-// 	expected := 4230 // too low
-// 	if output != expected {
-// 		t.Errorf("sample part b = %d; expected %d", output, expected)
-// 	}
-// }
+func TestPartB(t *testing.T) {
+	output := PartB("./samples/input.txt")
+	// 2106 is too low
+	// 2170 is too high
+
+	// 100 - 1885
+	// 200 - 1884
+	// 500 - 1884
+	// 530 - 1884 // all too low
+	expected := 2106 // too low
+	if output != expected {
+		t.Errorf("sample part b = %d; expected %d", output, expected)
+	}
+}
