@@ -1,6 +1,9 @@
 package utils
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Direction int
 
@@ -42,20 +45,19 @@ func FindStartingChar(grid [][]string, startingChar string) (int, int) {
 	return 0, 0
 }
 
-func MarkGridSpotVisited(x, y int, visitedMap map[int]map[int]bool) map[int]map[int]bool {
-	if _, exists := visitedMap[x]; !exists {
-		visitedMap[x] = make(map[int]bool)
-	}
-	visitedMap[x][y] = true
-	// return bc pass by value
+func makeKey(row, col int, direction Direction) string {
+	return fmt.Sprintf("%d,%d,%d", row, col, direction)
+}
+
+func MarkGridSpotVisited(x, y int, visitedMap map[string]bool, direction Direction) map[string]bool {
+	key := makeKey(x, y, direction)
+	visitedMap[key] = true
 	return visitedMap
 }
 
-func WasVisited(x, y int, visitedMap map[int]map[int]bool) bool {
-	if _, exists := visitedMap[x]; !exists {
-		return false
-	}
-	return visitedMap[x][y]
+func WasVisited(x, y int, visitedMap map[string]bool, direction Direction) bool {
+	key := makeKey(x, y, direction)
+	return visitedMap[key]
 }
 
 func GetValidSurroundingIndices(grid [][]string, rowIndex int, colIndex int) []Direction {
@@ -128,4 +130,19 @@ func ResetGrid(grid [][]string) [][]string {
 		copy(copiedGrid[i], grid[i])
 	}
 	return copiedGrid
+}
+
+func CountUniqueCoordinates(visitedMap map[string]bool) int {
+	uniqueCoordinates := make(map[string]bool)
+
+	for key := range visitedMap {
+		// Extract the x, y part from the composite key
+		parts := strings.Split(key, ",") // Assuming key format is "row,col,direction"
+		if len(parts) >= 2 {
+			coordinateKey := fmt.Sprintf("%s,%s", parts[0], parts[1])
+			uniqueCoordinates[coordinateKey] = true
+		}
+	}
+
+	return len(uniqueCoordinates)
 }
