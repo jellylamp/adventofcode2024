@@ -1,4 +1,4 @@
-package day05
+package day06
 
 import (
 	"adventofcode2024/utils"
@@ -78,7 +78,6 @@ func markPositionAndContinue(row int, col int, vector utils.Direction) bool {
 				// we turned right... into ANOTHER wall; just exit back the way you came
 				if nextCell == "#" || nextCell == "0" {
 					newVector, newRow, newCol = utils.TurnRight(newVector, row, col)
-					nextCell = grid[newRow][newCol]
 				}
 
 			}
