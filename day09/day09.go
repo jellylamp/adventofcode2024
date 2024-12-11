@@ -86,10 +86,10 @@ func PartA(filename string) int {
 }
 
 type Fragment struct {
-	length           int
-	id               string
-	startingLocation int
-	indexInList      int
+	length                 int
+	id                     string
+	startingLocation       int
+	hasBeenCheckedOrFilled bool
 }
 
 func PartB(filename string) int {
@@ -99,6 +99,7 @@ func PartB(filename string) int {
 	uncompactedList := []Fragment{}
 	uncompactedLength := 0
 	periodLocationList := []Fragment{}
+	idLocationList := []Fragment{}
 
 	listLength := 0
 	for index, characterAsRune := range line {
@@ -109,96 +110,120 @@ func PartB(filename string) int {
 		if isOdd {
 			// blank space X times
 			xTimes := utils.ConvertStringToInt(character)
+			if xTimes != 0 {
+				uncompactedList = append(uncompactedList, Fragment{xTimes, ".", listLength, false})
 
-			// maybe we only add periods in x times but not the normal ones, so we dont get messed up?
-			for i := 0; i < xTimes; i++ {
-				uncompactedList = append(uncompactedList, Fragment{xTimes, ".", listLength, uncompactedLength})
 				// keep track of where periods are so we can more easily traverse the list again
-				periodLocationList = append(periodLocationList, Fragment{xTimes, ".", listLength, uncompactedLength})
+				periodLocationList = append(periodLocationList, Fragment{xTimes, ".", listLength, false})
+				listLength += xTimes
+				uncompactedLength++
 			}
-			listLength += xTimes
-			uncompactedLength++
 		} else {
 			// add id in character num times
 			xTimes := utils.ConvertStringToInt(character)
-			uncompactedList = append(uncompactedList, Fragment{xTimes, strconv.Itoa(idVal), listLength, uncompactedLength})
+			if xTimes != 0 {
+				uncompactedList = append(uncompactedList, Fragment{xTimes, strconv.Itoa(idVal), listLength, false})
+				idLocationList = append(idLocationList, Fragment{xTimes, strconv.Itoa(idVal), listLength, false})
 
-			// increment after
-			listLength += xTimes
-			uncompactedLength++
-			idVal++
+				// increment after
+				listLength += xTimes
+				uncompactedLength++
+				idVal++
+			}
 		}
 	}
 
 	// make a copy so we have uncompacted list for debugging
 	compactedList := make([]Fragment, len(uncompactedList))
 	copy(compactedList, uncompactedList)
+	periodFragmentListCopy := make([]Fragment, len(periodLocationList))
+	copy(periodFragmentListCopy, periodLocationList)
 
-	// make a copy of this list so our index's stay relevant after insertion
-	compactedListUnaltered := make([]Fragment, len(uncompactedList))
-	copy(compactedListUnaltered, uncompactedList)
+	idListLength := len(idLocationList)
 
-	compactedListLength := len(compactedList)
-	// lastFragment := compactedList[compactedListLength -1]
-	// highestFragmentId := lastFragment.id
-	var lastFragment Fragment
-	highestId := -1
+	for idListIndex := idListLength - 1; idListIndex >= 0; idListIndex-- {
+		// starting with the end of the list (highest id)
+		//see if there is a section in the period list that will contain it!
+		currentFragment := idLocationList[idListIndex]
+		currentFragmentIndex := findFragmentIndex(compactedList, currentFragment)
 
-	// loop through period blocks so we can compact and replace
-	// 00992111777.44.333....5555.6666.....8888..
-	for index := 0; index < len(periodLocationList); index++ {
-		indexToReplace := periodLocationList[index].indexInList
-		blockLength := periodLocationList[index].length
+		for periodIndex := range periodLocationList {
+			// update the copy, not what we are looping over
+			// oh shit we using pointers baby
+			periodFragment := &periodFragmentListCopy[periodIndex]
+			if periodFragment.length >= currentFragment.length && !periodFragment.hasBeenCheckedOrFilled {
+				periodFragmentIndex := findFragmentIndex(compactedList, *periodFragment)
 
-		for endIndex := compactedListLength - 1; endIndex >= 0; endIndex-- {
-			lastFragment = compactedList[endIndex]
-			if lastFragment.id != "." {
-				lastFragmentIdInInt := utils.ConvertStringToInt(lastFragment.id)
-				if highestId > lastFragmentIdInInt || highestId == -1 {
-					// we have not tried this fragments id!
-					highestId = lastFragmentIdInInt
-					if lastFragment.length <= blockLength {
+				// only move things if they move back
+				if periodFragmentIndex < currentFragmentIndex {
+					// replace current fragments location with periods
+					compactedList[currentFragmentIndex] = Fragment{currentFragment.length, ".", currentFragment.startingLocation, true}
 
-						// fresh index proceed like normal
-						if compactedList[indexToReplace].id == "." {
-							// replace our block with a "." fragment our blocks long
-							compactedList[lastFragment.indexInList] = Fragment{lastFragment.length, ".", lastFragment.startingLocation, lastFragment.indexInList}
-							smallFragment := lastFragment
-							smallFragment.length = 1
-							for blocksFilled := lastFragment.length; blocksFilled > 0; blocksFilled-- {
-								// replace indexToReplaceWithOurBlock - but size it down to 1 so we don't miscalculate later
-								compactedList[indexToReplace] = smallFragment
-								indexToReplace++
-								blockLength--
-							}
+					// replace period fragment with current fragment
+					compactedList[periodFragmentIndex] = currentFragment
 
-							if blockLength > 0 {
-								// we gotta keep filling
-								continue
-							} else {
-								// we have filled it completely, break
-								break
-							}
-						}
+					// If there is any space left.... update period fragments index and length
+					lengthLeftover := periodFragment.length - currentFragment.length
+					if lengthLeftover > 0 {
+						periodFragment.length = lengthLeftover
+						periodFragment.startingLocation += lengthLeftover
+
+						// ugh fuck this again
+
+						// need to make sure compacted list still has this spot saved...
+						compactedList = append(compactedList[:periodFragmentIndex+1], append([]Fragment{*periodFragment}, compactedList[periodFragmentIndex+1:]...)...)
+					} else {
+						// remove period fragment from list
+						periodFragment.hasBeenCheckedOrFilled = true
 					}
+					break
 				} else {
-					// we have tried this fragment, move along
-					continue
+					// we can break here... if at this point its smaller it wont get better
+					break
 				}
-			} else {
-				// we found a blank keep going
-				continue
 			}
 		}
 	}
 
+	flattenedFragments := flattenFragments(compactedList)
 	checksum := 0
 	// loop through compacted list and make a checksum!
-	for index, fragment := range compactedList {
+	for index, fragment := range flattenedFragments {
 		if fragment.id != "." {
 			bitChecksum := index * utils.ConvertStringToInt(fragment.id)
 			checksum += bitChecksum
 		}
 	}
 	return checksum
+}
+
+func areFragmentsEqual(a, b Fragment) bool {
+	return a.length == b.length &&
+		a.id == b.id &&
+		a.startingLocation == b.startingLocation &&
+		a.hasBeenCheckedOrFilled == b.hasBeenCheckedOrFilled
+}
+
+func findFragmentIndex(list []Fragment, target Fragment) int {
+	for i, fragment := range list {
+		if areFragmentsEqual(fragment, target) {
+			return i
+		}
+	}
+	return -1
+}
+
+func flattenFragments(fragments []Fragment) []Fragment {
+	var flattened []Fragment
+	for _, fragment := range fragments {
+		for i := 0; i < fragment.length; i++ {
+			flattened = append(flattened, Fragment{
+				length:                 1,
+				id:                     fragment.id,
+				startingLocation:       fragment.startingLocation + i,
+				hasBeenCheckedOrFilled: fragment.hasBeenCheckedOrFilled,
+			})
+		}
+	}
+	return flattened
 }
