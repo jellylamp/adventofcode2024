@@ -39,13 +39,13 @@ func TestPartA(t *testing.T) {
 // 	}
 // }
 
-// func TestSamplePartB(t *testing.T) {
-// 	output := PartB("./samples/sample.txt")
-// 	expected := 34
-// 	if output != expected {
-// 		t.Errorf("sample part b = %d; expected %d", output, expected)
-// 	}
-// }
+func TestSamplePartB(t *testing.T) {
+	output := PartB("./samples/sample.txt")
+	expected := 2858
+	if output != expected {
+		t.Errorf("sample part b = %d; expected %d", output, expected)
+	}
+}
 
 // func TestPartB(t *testing.T) {
 // 	output := PartB("./samples/input.txt")
