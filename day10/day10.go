@@ -20,6 +20,22 @@ func PartA(filename string) int {
 	return trailheadCount
 }
 
+var pathCount = 0
+
+func PartB(filename string) int {
+	grid := utils.ReadFileTo2DArray(filename)
+
+	// step one find all zeros; then we search!
+	startingList := utils.FindStartingPositionList(grid, "0")
+	for _, startingPosition := range startingList {
+		nineMap := make(map[utils.Position]bool)
+		// target answer will increase
+		OrthagonalSearchTreeDFS(grid, startingPosition.Row, startingPosition.Column, 0, 1, -1, nineMap)
+	}
+
+	return pathCount
+}
+
 func OrthagonalSearchTreeDFS(grid [][]string, row int, col int, currentNumber int, lookingFor int, previousNumber int, nineMap map[utils.Position]bool) bool {
 	shouldReturn := false
 
@@ -27,6 +43,7 @@ func OrthagonalSearchTreeDFS(grid [][]string, row int, col int, currentNumber in
 	if currentNumber == 9 && previousNumber == 8 {
 		// found one! return
 		nineMap[utils.Position{Row: row, Column: col}] = true
+		pathCount++
 		return true
 	}
 
