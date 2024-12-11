@@ -33,6 +33,11 @@ var DirectionOffsetList = map[Direction]DirectionOffsets{
 	W:  {RowOffset: 0, ColOffset: -1},
 }
 
+type Position struct {
+	Row    int
+	Column int
+}
+
 func FindStartingChar(grid [][]string, startingChar string) (int, int) {
 	for rowIndex, row := range grid {
 		for colIndex := range row {
@@ -43,6 +48,19 @@ func FindStartingChar(grid [][]string, startingChar string) (int, int) {
 	}
 
 	return 0, 0
+}
+
+func FindStartingPositionList(grid [][]string, startingChar string) []Position {
+	positionMap := []Position{}
+	for rowIndex, row := range grid {
+		for colIndex := range row {
+			if grid[rowIndex][colIndex] == startingChar {
+				positionMap = append(positionMap, Position{rowIndex, colIndex})
+			}
+		}
+	}
+
+	return positionMap
 }
 
 func makeKey(row, col int, direction Direction) string {
@@ -145,4 +163,18 @@ func CountUniqueCoordinates(visitedMap map[string]bool) int {
 	}
 
 	return len(uniqueCoordinates)
+}
+
+func GetValidIntByVector(grid [][]string, rowIndex int, colIndex int, vector Direction) (int, int, int) {
+	// keep checking in the direction of the vector
+	offsets := DirectionOffsetList[vector]
+	newRow := rowIndex + offsets.RowOffset
+	newCol := colIndex + offsets.ColOffset
+
+	// Check if the new coordinates are valid
+	if IsValid2DIndex(grid, newRow, newCol) {
+		return ConvertStringToInt(grid[newRow][newCol]), newRow, newCol
+	}
+
+	return -1, newRow, newCol
 }
