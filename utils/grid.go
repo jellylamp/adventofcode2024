@@ -178,3 +178,17 @@ func GetValidIntByVector(grid [][]string, rowIndex int, colIndex int, vector Dir
 
 	return -1, newRow, newCol
 }
+
+func GetValidStringByVector(grid [][]string, rowIndex int, colIndex int, vector Direction) (string, int, int) {
+	// keep checking in the direction of the vector
+	offsets := DirectionOffsetList[vector]
+	newRow := rowIndex + offsets.RowOffset
+	newCol := colIndex + offsets.ColOffset
+
+	// Check if the new coordinates are valid
+	if IsValid2DIndex(grid, newRow, newCol) {
+		return grid[newRow][newCol], newRow, newCol
+	}
+
+	return "", newRow, newCol
+}
