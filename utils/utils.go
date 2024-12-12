@@ -104,3 +104,19 @@ func IndexOf(list []string, element string) int {
 	}
 	return -1
 }
+
+func StringArrayToIntArray(strArr []string) ([]int, error) {
+	intArr := make([]int, len(strArr))
+	for i, s := range strArr {
+		num, err := strconv.Atoi(s)
+		if err != nil {
+			return nil, err
+		}
+		intArr[i] = num
+	}
+	return intArr, nil
+}
+
+func ConvertIntToString(num int) string {
+	return strconv.Itoa(num)
+}
