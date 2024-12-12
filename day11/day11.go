@@ -2,6 +2,7 @@ package day11
 
 import (
 	"adventofcode2024/utils"
+	"fmt"
 	"strings"
 )
 
@@ -21,6 +22,7 @@ func PartB(filename string) int {
 	lineArr := strings.Split(line, " ")
 	intArray, _ := utils.StringArrayToIntArray(lineArr)
 	for index := 0; index < 75; index++ {
+		fmt.Printf("loop %d\n", index)
 		intArray = getNextSetOfNums(intArray)
 	}
 
