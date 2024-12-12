@@ -16,6 +16,17 @@ func PartA(filename string) int {
 	return len(intArray)
 }
 
+func PartB(filename string) int {
+	line := utils.ReadFileAsSingleLine(filename)
+	lineArr := strings.Split(line, " ")
+	intArray, _ := utils.StringArrayToIntArray(lineArr)
+	for index := 0; index < 75; index++ {
+		intArray = getNextSetOfNums(intArray)
+	}
+
+	return len(intArray)
+}
+
 func getNextSetOfNums(intArray []int) []int {
 	updatedArray := []int{}
 	for _, rockNumber := range intArray {
