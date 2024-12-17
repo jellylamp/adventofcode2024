@@ -18,9 +18,25 @@ func TestTwoSamplesPartA(t *testing.T) {
 	}
 }
 
+func TestSamplePart3PartA(t *testing.T) {
+	total := PartA("./samples/thirdsample.txt")
+	expected := 200
+	if total != expected {
+		t.Errorf("sample part a = %d; expected %d", total, expected)
+	}
+}
+
+func TestSamplePartA(t *testing.T) {
+	total := PartA("./samples/sample.txt")
+	expected := 480
+	if total != expected {
+		t.Errorf("sample part a = %d; expected %d", total, expected)
+	}
+}
+
 func TestPartA(t *testing.T) {
 	output := PartA("./samples/input.txt")
-	expected := 175006
+	expected := 37297
 	if output != expected {
 		t.Errorf("sample part a = %d; expected %d", output, expected)
 	}

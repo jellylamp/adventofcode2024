@@ -2,6 +2,7 @@ package day13
 
 import (
 	"adventofcode2024/utils"
+	"fmt"
 	"regexp"
 )
 
@@ -11,6 +12,7 @@ type XYModifiers struct {
 }
 
 var countMap = make(map[XYModifiers]bool)
+var memo = make(map[string]bool)
 
 func PartA(filename string) int {
 	lineArr := utils.ReadFileToArrayOfLines(filename)
@@ -51,38 +53,47 @@ func PartA(filename string) int {
 			}
 		}
 		totalTokensForAllPrizes += lowestTokenTotal
-		// clear count map
+		// clear count map and cache
 		countMap = make(map[XYModifiers]bool)
+		memo = make(map[string]bool)
 	}
 
 	return totalTokensForAllPrizes
 }
 
-func binarySearchTreeDFS(targetX int, targetY int, currentADepth int, currentBDepth int, runningX int, runningY int, buttonA XYModifiers, buttonB XYModifiers) bool {
-	// Immediately exit if either depth is zero
+func binarySearchTreeDFS(targetX, targetY, currentADepth, currentBDepth, runningX, runningY int, buttonA, buttonB XYModifiers) bool {
+	// Generate a unique key for the current state
+	stateKey := fmt.Sprintf("%d,%d,%d,%d", runningX, runningY, currentADepth, currentBDepth)
+
+	// Check if we have already visited this state
+	if result, found := memo[stateKey]; found {
+		return result
+	}
+
+	// Exit if either depth reaches zero
 	if currentADepth == 0 || currentBDepth == 0 {
+		memo[stateKey] = false
 		return false
 	}
 
-	// Exit if we've exceeded the target
+	// Exit if we exceed the target
 	if runningX > targetX || runningY > targetY {
+		memo[stateKey] = false
 		return false
 	}
 
-	// Success condition
+	// Success condition: we hit the target
 	if runningX == targetX && runningY == targetY {
 		countMap[XYModifiers{XModifier: currentADepth, YModifier: currentBDepth}] = true
+		memo[stateKey] = true
 		return true
 	}
 
-	// Only attempt recursive calls if depths allow
-	if currentADepth > 0 && binarySearchTreeDFS(targetX, targetY, currentADepth-1, currentBDepth, runningX+buttonA.XModifier, runningY+buttonA.YModifier, buttonA, buttonB) {
-		return true
-	}
+	// Recursive calls: press button A or button B
+	pressA := binarySearchTreeDFS(targetX, targetY, currentADepth-1, currentBDepth, runningX+buttonA.XModifier, runningY+buttonA.YModifier, buttonA, buttonB)
+	pressB := binarySearchTreeDFS(targetX, targetY, currentADepth, currentBDepth-1, runningX+buttonB.XModifier, runningY+buttonB.YModifier, buttonA, buttonB)
 
-	if currentBDepth > 0 && binarySearchTreeDFS(targetX, targetY, currentADepth, currentBDepth-1, runningX+buttonB.XModifier, runningY+buttonB.YModifier, buttonA, buttonB) {
-		return true
-	}
-
-	return false
+	// Cache the result for this state
+	memo[stateKey] = pressA || pressB
+	return memo[stateKey]
 }
